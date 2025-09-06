@@ -1,0 +1,27 @@
+[project]
+authors = [{ name = "Guillermo Gil", email = "guillegil@proton.me" }]
+description = "My Pytest Plugin"
+version = "0.1.0"
+license = "MIT"
+name = "my-pytest-plugin-name"
+readme = "README.md"
+requires-python = ">=3.9"
+urls = { homepage = "https://mypluginurl.com", repository = "https://github.com/guillegil/pytest-plugin-template" }
+dependencies = ["pytest>=7"]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.entry-points."pytest11"]
+pytest-plugin = "pytest_plugin.plugin"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pytest_plugin*"]
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore::pytest.PytestUnknownMarkWarning"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
