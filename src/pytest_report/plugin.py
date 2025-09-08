@@ -30,7 +30,6 @@ class PytestReportPlugin:
         """Configure the plugin after command line options are parsed."""
         print()
         self.config = config
-
         self.reporter = Reporter(self.config)
 
         # Register markers if needed
@@ -80,19 +79,17 @@ class PytestReportPlugin:
     @pytest.hookimpl
     def pytest_runtest_protocol(self, item: Item, nextitem: Item):
         # -- Set verbosity back to the original value -------------------- #
-        self.config.option.verbose = 1
+        self.reporter.reporter_runtest_protocol()
 
     @pytest.hookimpl
     def pytest_runtest_setup(self, item: Item) -> None:
         """Called before each test setup."""
-        # -- TODO: This print() should be set in the terminal reporter --- #
-        print()
-        self.reporter.report_stage()
+        self.reporter.reporter_runtest_setup()
 
     @pytest.hookimpl
     def pytest_runtest_call(self, item: Item) -> None:
         """Called before each test call."""
-        self.reporter.report_stage()
+        self.reporter.reporter_runtest_call()
 
     @pytest.hookimpl
     def pytest_runtest_teardown(self, item: Item, nextitem: Optional[Item]) -> None:
@@ -108,8 +105,12 @@ class PytestReportPlugin:
         # -- What this does: ------------------------------------------------ #
         # -- 1. Prevents 'Captured Log' To be printed when an error occurs -- #
         # -- ... 
-        self.reporter.report_makereport(item, call, report)
+        self.reporter.reporter_makereport(item, call, report)
 
+
+    @pytest.hookimpl(tryfirst=True)
+    def pytest_runtest_logreport(self, report: TestReport):
+        self.reporter.reporter_runtest_logreport()
 
     # ========== REPORTING HOOKS ==========
     
@@ -135,9 +136,6 @@ class PytestReportPlugin:
         """Called when an exception occurred and can be interacted with."""
         pass
     
-    # ========== FIXTURES ==========
-    
-
 
 # Plugin instance
 _pytest_report_plugin = PytestReportPlugin()

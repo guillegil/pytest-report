@@ -5,8 +5,22 @@ from _pytest.runner import TestReport
 
 class TerminalReporter:
     def __init__(self, config: Config, *args, **kwargs):
+        self.__config  : Config = config
+        self.__options = self.__config.option
+        
         self.__show_captured_log_on_error: bool = config.getoption('--show-capture-log', False)
 
+    def set_verbosity(self, verbosity: int) -> None:
+        self.__options.verbose = verbosity
+
+    def configure_report_protocol(self) -> None:
+        self.set_verbosity(1)
+
+    def configure_report_setup(self) -> None:
+        print()
+    
+    def configure_report_call(self) -> None:
+        print()
 
     def __show_captured_log(self, section_header: str) -> bool:        
         if self.__show_captured_log_on_error:

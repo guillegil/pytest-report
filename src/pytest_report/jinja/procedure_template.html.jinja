@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Test Procedure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 60%;
+            /* ✅ 60% width */
+            margin: 0 auto 30px;
+            /* ✅ center table */
+        }
+
+        th,
+        td {
+            border: 1px solid #888;
+            padding: 8px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #d9edf7;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .main-description {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .substep {
+            margin-left: 20px;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+
+        .substep-id {
+            font-weight: bold;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Test Procedure</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width:15%">Step</th>
+                <th style="width:85%">Step Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for step in test_procedure.steps if step.parent == None %}
+            <tr>
+                <td>{{ step.id }}</td>
+                <td>
+                    <div class="main-description">{{ step.description }}</div>
+                    {% for substep in test_procedure.steps if substep.parent == step.id %}
+                    <div class="substep">
+                        <span class="substep-id">{{ substep.id }}:</span> {{ substep.description }}
+                    </div>
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>
