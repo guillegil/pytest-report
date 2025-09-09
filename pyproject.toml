@@ -23,6 +23,9 @@ pytest_report = "pytest_report.plugin"
 where = ["src"]
 include = ["pytest_report*"]
 
+[tool.setuptools.package-data]
+pytest_report = ["jinja/**/*"]
+
 [tool.pytest.ini_options]
 filterwarnings = ["ignore::pytest.PytestUnknownMarkWarning"]
 
