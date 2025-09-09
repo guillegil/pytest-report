@@ -10,7 +10,7 @@ from pathlib import Path
 
 from .paths import ReportPaths
 from .terminal_reporter import TerminalReporter
-from pytest_meta import meta
+# from pytest_meta import meta
 
 from advanced_logger import AdvancedLogger
 
