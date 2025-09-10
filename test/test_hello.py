@@ -4,7 +4,25 @@ import pytest_report
 
 from pytest_report import log
 
-def test_procedure():
+
+@pytest.fixture
+def setup():
+    log.info('This is info from setup')
+    log.warning('This is warning from setup')
+    yield None
+
+@pytest.mark.parametrize(
+        "arg1,arg2",
+        [
+            (1,2),
+            (3,4),
+            (5,6),
+        ]
+)
+def test_parameters(arg1, arg2):
+    log.info(f'Parameters are {arg1=} {arg2=}')
+
+def test_procedure(setup):
     log.step("Initialize environment and load test configuration")      # 1.
     log.substep("Load environment variables from config file")          # 1.1
     log.substep("Validate mandatory configuration keys are present")    # 1.2
@@ -34,26 +52,6 @@ def test_procedure():
     log.substep("Release memory and close all connections")             # 5.4
 
 def test_error():
-    log.init_term_handler('myterm', level='info')
-
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-    log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
     log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
     log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
     log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')

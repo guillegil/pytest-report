@@ -20,21 +20,33 @@ class ReportPaths:
     MODE_DEBUG = 'debug'
 
     def __init__(self, *args, **kwargs):
-        self.root       = kwargs.get('root', './reports')
-        self.tree_mode  = kwargs.get('tree_mode', 'tree')
+        self.__root       = kwargs.get('root', os.path.join('.', 'reports'))
+        self.tree_mode    = kwargs.get('tree_mode', 'tree')
+
+        self.__now   : str = datetime.now().strftime("%H_%M_%S")
+        self.__today : str = date.today().strftime("%Y_%m_%d")
 
     @property
-    def now(self) -> str:
-        return datetime.now().strftime("%H_%M_%S")
+    def root(self) -> str:
+        return self.__root
 
     @property
-    def today(self) -> str:
-        return date.today().strftime("%Y_%m_%d")
-
-    @property
-    def current_test_root_report_path(self) -> str:
+    def current_testcase(self) -> str:
         if self.tree_mode == self.MODE_TREE:
-            return self.shape_path(*get_hierarchy())
+            return self.shape_path(*get_hierarchy(), get_testcase())
+        elif self.tree_mode == self.MODE_FLAT:
+            return self.shape_path(self.get_flat_test_path())
+        elif self.tree_mode == self.MODE_DEBUG:
+            return self.shape_path('DEBUG', add_time=False)
+
+        else:
+            pass
+
+
+    @property
+    def current_testcase_run(self) -> str:
+        if self.tree_mode == self.MODE_TREE:
+            return self.shape_path(*get_hierarchy(), get_testcase(), get_test_index())
         elif self.tree_mode == self.MODE_FLAT:
             return self.shape_path(self.get_flat_test_path())
         elif self.tree_mode == self.MODE_DEBUG:
@@ -44,9 +56,18 @@ class ReportPaths:
             pass
 
     @property
+    def now(self) -> str:
+        return self.__now
+
+    @property
+    def today(self) -> str:
+        return self.__today
+
+
+    @property
     def logsetup_fname(self) -> str:
         if self.tree_mode == self.MODE_TREE:
-            return self.shape_path(*get_hierarchy(), get_test_index(), 'setup', f'{get_testcase()}.log')
+            return self.shape_path(*get_hierarchy(), get_testcase(), get_test_index(), 'setup', f'{get_testcase()}.log')
         elif self.tree_mode == self.MODE_FLAT:
             return self.shape_path(self.get_flat_test_path(), 'setup', f'{get_testcase()}.log')
         elif self.tree_mode == self.MODE_DEBUG:
@@ -57,7 +78,7 @@ class ReportPaths:
     @property
     def logcall_fname(self) -> str:
         if self.tree_mode == self.MODE_TREE:
-            return self.shape_path(*get_hierarchy(), get_test_index(), f'{get_testcase()}.log')
+            return self.shape_path(*get_hierarchy(), get_testcase(), get_test_index(), f'{get_testcase()}.log')
         elif self.tree_mode == self.MODE_FLAT:
             return self.shape_path(self.get_flat_test_path(), f'{get_testcase()}.log')
         elif self.tree_mode == self.MODE_DEBUG:
@@ -68,7 +89,7 @@ class ReportPaths:
     
 
     def get_flat_test_path(str) -> str:
-        return '_'.join(get_hierarchy()) + f"::{get_testcase()}"
+        return '_'.join(get_hierarchy()) + f"::{get_testcase()}[{get_test_index()}]"
 
     def shape_path(self, *args, **kwargs) -> str:
         add_date: bool = kwargs.get('add_date', True)

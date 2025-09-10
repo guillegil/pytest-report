@@ -8,6 +8,7 @@ from typing import Optional, List, Union, Any
 import warnings
 
 from .reporter.reporter import Reporter
+from pytest_meta import meta
 
 class PytestReportPlugin:
     """
@@ -95,7 +96,7 @@ class PytestReportPlugin:
     def pytest_runtest_teardown(self, item: Item, nextitem: Optional[Item]) -> None:
         """Called after each test teardown."""
         # -- TODO: This print should be set in the terminal reporter ------ #
-        print('\n')
+        self.reporter.reporter_runtest_teardown()
 
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_makereport(self, item: Item, call: CallInfo):
@@ -165,6 +166,23 @@ def pytest_addoption(parser) -> None:
         default=False,
         help="Shows the capture log when an 'error' is generated."
     )
+
+    group.addoption(
+        "--setup-level",
+        action="store",
+        choices=["debug", "info", "warning", "error", "critical"],
+        default='warning',
+        help="It determine the terminal log level at setup stage"
+    )
+
+    group.addoption(
+        "--call-level",
+        action="store",
+        choices=["debug", "info", "warning", "error", "critical"],
+        default='info',
+        help="It determine the terminal log level at call stage"
+    )
+
 
 def pytest_configure(config):
     """Register the plugin instance."""

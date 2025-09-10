@@ -22,6 +22,9 @@ class TerminalReporter:
     def configure_report_call(self) -> None:
         print()
 
+    def configure_report_teardown(self) -> None:
+        print()
+
     def __show_captured_log(self, section_header: str) -> bool:        
         if self.__show_captured_log_on_error:
             return True
