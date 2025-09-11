@@ -14,18 +14,18 @@ class TerminalReporter:
         self.__options.verbose = verbosity
 
     def configure_report_protocol(self) -> None:
-        self.set_verbosity(1)
+        self.set_verbosity(2)
 
     def configure_report_setup(self) -> None:
         print()
     
     def configure_report_call(self) -> None:
-        print()
+       print()
 
     def configure_report_teardown(self) -> None:
         print()
 
-    def __show_captured_log(self, section_header: str) -> bool:        
+    def __header_has_captured_log(self, section_header: str) -> bool:        
         if self.__show_captured_log_on_error:
             return True
 
@@ -45,5 +45,5 @@ class TerminalReporter:
                 (section_header, section_content)
 
                 for (section_header, section_content) 
-                    in report.sections if self.__show_captured_log(section_header)
+                    in report.sections if self.__header_has_captured_log(section_header)
             ]

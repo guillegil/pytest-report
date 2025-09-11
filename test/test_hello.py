@@ -55,6 +55,4 @@ def test_error():
     log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
     log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
     log.info('LOG LINE TO SEE IF IS DISPLAYED IN THE TB')
-
-    print("This is gonna break everything")
     

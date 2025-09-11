@@ -3,7 +3,7 @@ import os
 from pytest import Item, Config, Session, TestReport, CallInfo
 from _pytest.runner import TestReport
 
-from jinja2 import Environment, FileSystemLoader, ModuleLoader
+from jinja2 import Environment, FileSystemLoader, DictLoader, TemplateNotFound
 import importlib.resources
 
 from pathlib import Path
@@ -13,6 +13,9 @@ from .terminal_reporter import TerminalReporter
 from pytest_meta import meta
 
 from advanced_logger import AdvancedLogger
+
+DEFAULT_TEMPLATE_NAME = "procedure_template.html.jinja"
+DEFAULT_PACKAGE = "pytest_report.jinja"
 
 class Reporter:
     def __init__(self, config: Config, *args, **kwargs):
@@ -25,9 +28,11 @@ class Reporter:
         self.__setup_level : int = config.getoption('--setup-level', 'warning')
         self.__call_level  : int = config.getoption('--call-level', 'info')
 
+        self.__procedure_template_file: str = config.getoption('--procedure-report-html-template', None)
+
         self.__terminal_reporter = TerminalReporter(self.__config, *args, **kwargs)
 
-        self.__log = AdvancedLogger('pytest_report')
+        self.__log = AdvancedLogger('pytest_report_logger_instance')
 
         # -- TODO: This should be done by the terminal reporter --------------------- #
         self.__log.init_term_handler('pytest_report_term_handler', level='info')
@@ -103,11 +108,49 @@ class Reporter:
     def generate_test_report_html(self) -> None:
         pass
 
+    def _load_template(self):
+        # Case 1: user provided a custom path
+        if self.__procedure_template_file:
+            path = os.fspath(self.__procedure_template_file)
+            if os.path.isdir(path):
+                # Treat as directory containing the default template name
+                env = Environment(loader=FileSystemLoader(path))
+                try:
+                    return env.get_template(DEFAULT_TEMPLATE_NAME)
+                except TemplateNotFound:
+                    raise FileNotFoundError(
+                        f"Template '{DEFAULT_TEMPLATE_NAME}' not found in directory: {path}"
+                    )
+            elif os.path.isfile(path):
+                # Treat as a full file path
+                env = Environment(loader=FileSystemLoader(os.path.dirname(path)))
+                return env.get_template(os.path.basename(path))
+            else:
+                raise FileNotFoundError(f"Template path does not exist: {path}")
+
+        # Case 2: load default template from package resources
+        try:
+            # Robust for zip/egg: read text and feed via DictLoader
+            content = importlib.resources.files(DEFAULT_PACKAGE).joinpath(DEFAULT_TEMPLATE_NAME).read_text(encoding="utf-8")
+            env = Environment(loader=DictLoader({DEFAULT_TEMPLATE_NAME: content}))
+            return env.get_template(DEFAULT_TEMPLATE_NAME)
+        except (FileNotFoundError, ModuleNotFoundError, UnicodeDecodeError) as e:
+            # Fallback: try filesystem loader with a real path if available
+            try:
+                with importlib.resources.as_file(
+                    importlib.resources.files(DEFAULT_PACKAGE).joinpath(DEFAULT_TEMPLATE_NAME)
+                ) as template_path:
+                    env = Environment(loader=FileSystemLoader(template_path.parent))
+                    return env.get_template(template_path.name)
+            except Exception:
+                raise RuntimeError(
+                    f"Could not load default template '{DEFAULT_TEMPLATE_NAME}' from '{DEFAULT_PACKAGE}': {e}"
+                )
+
     def generate_test_procedure_html(self) -> None:
         # Load template from the current folder
-        with importlib.resources.path("pytest_report.jinja", "procedure_template.html.jinja") as template_path:
-            env = Environment(loader=FileSystemLoader(template_path.parent))
-            template = env.get_template("procedure_template.html.jinja")
+
+        template = self._load_template()
 
         # Render with the dictionary
         output = template.render(test_procedure=self.log.test_procedure)

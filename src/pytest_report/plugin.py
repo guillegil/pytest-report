@@ -183,6 +183,13 @@ def pytest_addoption(parser) -> None:
         help="It determine the terminal log level at call stage"
     )
 
+    group.addoption(
+        "--procedure-report-html-template",
+        action="store",
+        default=None,
+        help="Path to the Procedure HTML template"
+    )
+
 
 def pytest_configure(config):
     """Register the plugin instance."""
