@@ -19,6 +19,9 @@ DEFAULT_PACKAGE = "pytest_report.jinja"
 
 class Reporter:
     def __init__(self, config: Config, *args, **kwargs):
+        if not config:
+            return
+        
         self.__config  = config
         self.__options = self.__config.option
 
@@ -181,3 +184,6 @@ class Reporter:
 
         with open(procedure_path, "w", encoding="utf-8") as f:
             f.write(output)
+
+
+reporter = Reporter({})

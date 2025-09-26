@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional, List, Union, Any
 import warnings
 
-from .reporter.reporter import Reporter
+from .reporter.reporter import reporter, Reporter
 from pytest_meta import meta
 
 from pytest_checker import check
@@ -25,7 +25,7 @@ class PytestReportPlugin:
     
     def __init__(self):
         self.config     : Optional[Config] = None
-        self.reporter   : Reporter = None
+        self.reporter   : Reporter = reporter
     
     # ========== CONFIGURATION HOOKS ==========
     @pytest.hookimpl
@@ -33,7 +33,7 @@ class PytestReportPlugin:
         """Configure the plugin after command line options are parsed."""
         print()
         self.config = config
-        self.reporter = Reporter(self.config)
+        self.reporter.__init__(self.config)
 
         try:
             check.use_log(self.reporter.log)
