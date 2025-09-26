@@ -64,11 +64,11 @@ class Reporter:
 
     def reporter_runtest_protocol(self) -> None:
         self.terminal_reporter.configure_report_protocol()
-        
-        meta.current_test.report_path = self.paths.current_testcase
+    
 
     def reporter_runtest_setup(self) -> None:
         meta.current_test.current_run.report_path = self.paths.current_testcase_run
+        meta.current_test.report_path = self.paths.current_testcase
 
         # -- Configure terminal reporter on setup stage ----------------- #
         self.terminal_reporter.configure_report_setup()
@@ -113,9 +113,16 @@ class Reporter:
         try:
             if meta.current_test.current_run.call.failed:
                 Path(self.paths.current_testcase_run).rename(f'{self.paths.current_testcase_run}_F')
+                meta.current_test.current_run.report_path = f'{self.paths.current_testcase_run}_F'
 
             if meta.current_test.current_run.call.passed:
                 Path(self.paths.current_testcase_run).rename(f'{self.paths.current_testcase_run}_P')
+                meta.current_test.current_run.report_path = f'{self.paths.current_testcase_run}_P'
+
+            if meta.current_test.current_run.call.skipped:
+                Path(self.paths.current_testcase_run).rename(f'{self.paths.current_testcase_run}_S')
+                meta.current_test.current_run.report_path = f'{self.paths.current_testcase_run}_S'
+
         except:
             pass 
 
