@@ -84,7 +84,7 @@ class PytestReportPlugin:
     
     # ========== TEST EXECUTION HOOKS ==========
 
-    @pytest.hookimpl
+    @pytest.hookimpl(trylast=True)
     def pytest_runtest_protocol(self, item: Item, nextitem: Item):
         # -- Set verbosity back to the original value -------------------- #
         self.reporter.reporter_runtest_protocol()
