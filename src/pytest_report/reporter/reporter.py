@@ -66,9 +66,10 @@ class Reporter:
         self.terminal_reporter.configure_report_protocol()
         
         meta.current_test.report_path = self.paths.current_testcase
-        meta.current_test.current_run.report_path = self.paths.current_testcase_run
 
     def reporter_runtest_setup(self) -> None:
+        meta.current_test.current_run.report_path = self.paths.current_testcase_run
+
         # -- Configure terminal reporter on setup stage ----------------- #
         self.terminal_reporter.configure_report_setup()
       
