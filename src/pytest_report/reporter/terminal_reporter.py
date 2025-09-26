@@ -31,6 +31,7 @@ class TerminalReporter:
 
         header_is_str: bool = isinstance(section_header, str)
         has_captured_log: bool = section_header.lower().startswith("captured log")
+        has_captured_log = has_captured_log or section_header.lower().startswith('captured stdout')
 
         return (not header_is_str and has_captured_log)
 

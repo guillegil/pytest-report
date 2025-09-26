@@ -86,6 +86,18 @@ class ReportPaths:
 
         else:
             pass
+
+    @property
+    def logproc_fname(self) -> str:
+        if self.tree_mode == self.MODE_TREE:
+            return self.shape_path(*get_hierarchy(), get_testcase(), get_test_index(), f'steps_{get_testcase()}.log')
+        elif self.tree_mode == self.MODE_FLAT:
+            return self.shape_path(self.get_flat_test_path(), f'steps_{get_testcase()}.log')
+        elif self.tree_mode == self.MODE_DEBUG:
+            return self.shape_path('DEBUG', get_test_index(), f'steps_{get_testcase()}.log', add_time=False)
+
+        else:
+            pass
     
 
     def get_flat_test_path(str) -> str:

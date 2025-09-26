@@ -86,7 +86,10 @@ class Reporter:
         self.log.set_handler_level('pytest_report_term_handler', level=self.__call_level)
 
         # -- Create a log file for for the call ------------------------- #
-        self.log.init_file_handler('stage_file_handler', self.paths.logcall_fname, level='info')
+        self.log.init_file_handler('stage_file_handler', self.paths.logcall_fname, level=self.__call_level)
+
+        self.log.init_procedure_log_handler('procedure_file_handler', self.paths.logproc_fname)
+        self.log.reset_steps()
 
     def reporter_runtest_teardown(self) -> None:
         self.terminal_reporter.configure_report_teardown()
@@ -101,9 +104,19 @@ class Reporter:
 
         if meta.current_stage == 'teardown':
             self.generate_test_procedure_html()
+    
+
 
     def reporter_runtest_logreport(self) -> None:
-        pass
+      if meta.current_stage == 'call':
+        try:
+            if meta.current_test.current_run.call.failed:
+                Path(self.paths.current_testcase_run).rename(f'{self.paths.current_testcase_run}_F')
+
+            if meta.current_test.current_run.call.passed:
+                Path(self.paths.current_testcase_run).rename(f'{self.paths.current_testcase_run}_P')
+        except:
+            pass 
 
     def generate_test_report_html(self) -> None:
         pass

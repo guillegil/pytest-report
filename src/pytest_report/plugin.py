@@ -10,6 +10,8 @@ import warnings
 from .reporter.reporter import Reporter
 from pytest_meta import meta
 
+from pytest_checker import check
+
 class PytestReportPlugin:
     """
     A modern pytest plugin template with commonly used hooks.
@@ -32,6 +34,11 @@ class PytestReportPlugin:
         print()
         self.config = config
         self.reporter = Reporter(self.config)
+
+        try:
+            check.use_log(self.reporter.log)
+        finally:
+            pass
 
         # Register markers if needed
         config.addinivalue_line(
@@ -101,15 +108,17 @@ class PytestReportPlugin:
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_makereport(self, item: Item, call: CallInfo):
         outcome = yield
-        report: TestReport = outcome.get_result()
+        try:
+            report: TestReport = outcome.get_result()
 
-        # -- What this does: ------------------------------------------------ #
-        # -- 1. Prevents 'Captured Log' To be printed when an error occurs -- #
-        # -- ... 
-        self.reporter.reporter_makereport(item, call, report)
+            # -- What this does: ------------------------------------------------ #
+            # -- 1. Prevents 'Captured Log' To be printed when an error occurs -- #
+            # -- ... 
+            self.reporter.reporter_makereport(item, call, report)
+        except: pass
 
 
-    @pytest.hookimpl(tryfirst=True)
+    @pytest.hookimpl(trylast=True)
     def pytest_runtest_logreport(self, report: TestReport):
         self.reporter.reporter_runtest_logreport()
 
