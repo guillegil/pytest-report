@@ -146,3 +146,5 @@ def test_complex_procedure():
     log.step('Process summary', procedure_info={
         'note': 'Bring-up order: power → reset → clocks → GPIO → serial buses → converters → timers → interrupts → security'
     })
+
+    assert False

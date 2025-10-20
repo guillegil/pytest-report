@@ -34,6 +34,7 @@ class PytestReportPlugin:
         print()
         self.config = config
         self.reporter.__init__(self.config)
+        config.option.log_cli = False
 
         try:
             check.use_log(self.reporter.log)
@@ -105,7 +106,7 @@ class PytestReportPlugin:
         # -- TODO: This print should be set in the terminal reporter ------ #
         self.reporter.reporter_runtest_teardown()
 
-    @pytest.hookimpl(hookwrapper=True)
+    @pytest.hookimpl(hookwrapper=True, trylast=True)
     def pytest_runtest_makereport(self, item: Item, call: CallInfo):
         outcome = yield
         try:
@@ -207,4 +208,5 @@ def pytest_configure(config):
 
 def pytest_unconfigure(config):
     if config.pluginmanager.has_plugin("pytest_report"):
+        
         config.pluginmanager.unregister(_pytest_report_plugin, "pytest_report")
