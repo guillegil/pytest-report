@@ -31,6 +31,10 @@ class ReportPaths:
         return self.__root
 
     @property
+    def current_run_root_test_path(self) -> str:
+        return self.shape_path()
+
+    @property
     def current_testcase(self) -> str:
         if self.tree_mode == self.MODE_TREE:
             return self.shape_path(*get_hierarchy(), get_testcase())
@@ -41,7 +45,6 @@ class ReportPaths:
 
         else:
             pass
-
 
     @property
     def current_testcase_run(self) -> str:
@@ -62,7 +65,6 @@ class ReportPaths:
     @property
     def today(self) -> str:
         return self.__today
-
 
     @property
     def logsetup_fname(self) -> str:
